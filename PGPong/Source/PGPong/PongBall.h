@@ -1,12 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// PongBall.h
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Components/BoxComponent.h"
 #include "PongBall.generated.h"
-class UBoxComponent;
+
 UCLASS()
 class PGPONG_API APongBall : public AActor
 {
@@ -24,25 +23,22 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sphere")
-	float BallSpeed;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sphere")
+	// Ball static mesh component
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ball")
 	UStaticMeshComponent* StaticMesh;
+
+	// Ball collision component
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ball")
+	class USphereComponent* Sphere;
+
+	// Initial speed of the ball
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float InitialSpeed = 1000.0f;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sphere")
-	UBoxComponent* BallHitBox;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sphere")
-	uint8 gameEnd:1;
-
-	FVector BallSpeedVector;
-	void ResetBall();
-	void start();
-	void stop();
-
+	// Ball bounce function
 	UFUNCTION()
-	void paddleCollision(AActor* overlappedActor, AActor* otherActor);
-	private:
-	float startingSpeed;
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, 
+			   UPrimitiveComponent* OtherComp, FVector NormalImpulse, 
+			   const FHitResult& Hit);
 };

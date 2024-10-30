@@ -1,84 +1,86 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
 #include "PongBall.h"
+#include "Components/SphereComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
+#include "PongWalls.h" // Import the wall class header
 
 // Sets default values
 APongBall::APongBall()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bCanEverTick = true;
 
-	BallSpeed = 500.0f;
+    // Create and configure the sphere collision component as the root component
+    Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
+    RootComponent = Sphere;
+    Sphere->SetCollisionProfileName(TEXT("PhysicsActor"));
+    Sphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    Sphere->SetCollisionResponseToAllChannels(ECR_Block);
+    Sphere->SetNotifyRigidBodyCollision(true);
+    Sphere->SetSimulatePhysics(true);
 
-	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
-	RootComponent = StaticMesh;
+    Sphere->SetConstraintMode(EDOFMode::XZPlane);
 
-	StaticMesh -> SetSimulatePhysics(true);
-	StaticMesh -> SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	StaticMesh -> SetCollisionObjectType(ECC_PhysicsBody);
-	StaticMesh -> SetEnableGravity(false);
-	StaticMesh -> SetConstraintMode(EDOFMode::XYPlane);
+    // Create and attach the static mesh
+    StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
+    StaticMesh->SetupAttachment(Sphere);
 
-	StaticMesh -> SetCollisionResponseToAllChannels(ECR_Block);
-	StaticMesh -> BodyInstance.bUseCCD = true;
-	//StaticMesh -> OnComponentHit.AddDynamic(this, &APongBall::OnActorHit);
-
-	BallHitBox = CreateDefaultSubobject<UBoxComponent>("BallHitBox");
-	BallHitBox -> SetupAttachment(StaticMesh);
-	BallHitBox -> SetCollisionProfileName("PongBall");
-	BallHitBox -> SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	BallHitBox -> SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
-	BallHitBox -> SetBoxExtent(FVector(50.0f, 50.0f, 50.0f));
-
-	gameEnd = false;
-
+    // Set up collision events
+    Sphere->OnComponentHit.AddDynamic(this, &APongBall::OnHit);
 }
 
 // Called when the game starts or when spawned
 void APongBall::BeginPlay()
 {
-	Super::BeginPlay();
-	ResetBall();
-	startingSpeed = StaticMesh->GetPhysicsLinearVelocity().Size();
-	UE_LOG(LogTemp, Warning, TEXT("Initial Speed of the Ball: %f"), startingSpeed);
+    Super::BeginPlay();
 
-	//SetReplicateMovement(true);
+    // Generate a random initial direction
+    float RandomAngle = FMath::RandRange(0.0f, 360.0f); // Random angle in degrees
+    FVector RandomDirection = FRotationMatrix(FRotator(0.0f, RandomAngle, 0.0f)).GetUnitAxis(EAxis::X); // Use X for forward direction
 
-	OnActorBeginOverlap.AddDynamic(this, &APongBall::APongBall::paddleCollision);
-	
+    // Scale the direction by the initial speed
+    FVector InitialImpulse = RandomDirection * InitialSpeed;
+
+    // Apply the impulse to the sphere component
+    Sphere->AddImpulse(InitialImpulse, NAME_None, true);
 }
 
 // Called every frame
 void APongBall::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
-
-	SetActorLocation(GetActorLocation() + (BallSpeedVector * BallSpeed * DeltaTime));
+    Super::Tick(DeltaTime);
 }
 
-void APongBall::ResetBall()
+// Function to handle collision and bounce the ball
+void APongBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+                      UPrimitiveComponent* OtherComp, FVector NormalImpulse,
+                      const FHitResult& Hit)
 {
-	SetActorLocation(FVector::ZeroVector);
-	StaticMesh -> SetPhysicsLinearVelocity(FVector(FMath::RandRange(-300.0f, 300.0f), (FMath::RandBool() ? 1.f:-1.f)*2000.f, 0.0f));
-}
+    // Check if the actor we hit is a wall
+    if (OtherActor && OtherActor->IsA(APongWalls::StaticClass()))
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Ball hit a wall!"));
 
-void APongBall::start()
-{
-	gameEnd = false;
+        // Get the current velocity of the ball
+        FVector CurrentVelocity = Sphere->GetComponentVelocity();
+        UE_LOG(LogTemp, Warning, TEXT("Ball velocity before hit: X=%f Y=%f Z=%f"), CurrentVelocity.X, CurrentVelocity.Y, CurrentVelocity.Z);
+        
+        // Only proceed if the ball has some velocity
+        if (!CurrentVelocity.IsZero())
+        {
+            // Reflect the velocity based on the hit normal
+            FVector HitNormal = Hit.Normal; // Normal of the wall
+            FVector ReflectedVelocity = CurrentVelocity - 2 * FVector::DotProduct(CurrentVelocity, HitNormal) * HitNormal;
+            
+            // Clamp Z component to prevent upward movement
+            ReflectedVelocity.Z = 0.0f; 
 
-	SetActorLocation(FVector::ZeroVector);
-	StaticMesh -> SetPhysicsLinearVelocity(FVector(FMath::RandRange(-300.0f, 300.0f), (FMath::RandBool() ? 1.f:-1.f)*2000.f, 0.0f));
-}
-
-void APongBall::stop()
-{
-	gameEnd = true;
-	StaticMesh -> SetPhysicsLinearVelocity(FVector::ZeroVector);
-}
-
-void APongBall::paddleCollision(AActor* overlappedActor, AActor* otherActor)
-{
-	//APongPaddle* PongPaddle = cast<ApongPaddle>(otherActor);
+            // Log the reflected velocity
+            UE_LOG(LogTemp, Warning, TEXT("Ball reflected velocity: X=%f Y=%f Z=%f"), ReflectedVelocity.X, ReflectedVelocity.Y, ReflectedVelocity.Z);
+            
+            // Set the new velocity to the reflected velocity
+            Sphere->SetPhysicsLinearVelocity(ReflectedVelocity);
+        }
+    }
 }
 
