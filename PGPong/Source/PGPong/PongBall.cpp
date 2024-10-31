@@ -1,9 +1,11 @@
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
 #include "PongBall.h"
+#include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
+#include "Components/StaticMeshComponent.h" // Include for StaticMeshComponent
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "PongWalls.h" // Import the wall class header
+#include "TimerManager.h" // Include for timer functionality
 
 // Sets default values
 APongBall::APongBall()
@@ -19,14 +21,19 @@ APongBall::APongBall()
     Sphere->SetNotifyRigidBodyCollision(true);
     Sphere->SetSimulatePhysics(true);
 
-    Sphere->SetConstraintMode(EDOFMode::XZPlane);
-
     // Create and attach the static mesh
     StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
-    StaticMesh->SetupAttachment(Sphere);
+    StaticMesh->SetupAttachment(Sphere); // Attach the static mesh to the sphere
 
-    // Set up collision events
-    Sphere->OnComponentHit.AddDynamic(this, &APongBall::OnHit);
+    // Optionally set a default static mesh (make sure to replace with your own mesh asset)
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> BallMeshAsset(TEXT("StaticMesh'/Game/Path/To/Your/BallMesh.BallMesh'")); // Adjust path as needed
+    if (BallMeshAsset.Succeeded())
+    {
+        StaticMesh->SetStaticMesh(BallMeshAsset.Object); // Set the mesh if found
+    }
+
+    // Set the initial speed
+    InitialSpeed = 1000.0f; // Adjust this value as needed
 }
 
 // Called when the game starts or when spawned
@@ -34,15 +41,20 @@ void APongBall::BeginPlay()
 {
     Super::BeginPlay();
 
-    // Generate a random initial direction
-    float RandomAngle = FMath::RandRange(0.0f, 360.0f); // Random angle in degrees
-    FVector RandomDirection = FRotationMatrix(FRotator(0.0f, RandomAngle, 0.0f)).GetUnitAxis(EAxis::X); // Use X for forward direction
+    // Wait for 1 second before launching the ball
+    FTimerHandle LaunchTimerHandle;
+    GetWorld()->GetTimerManager().SetTimer(LaunchTimerHandle, [this]()
+    {
+        // Set a fixed diagonal direction (e.g., launching towards the top right)
+        FVector InitialDirection = FVector(1.0f, 1.0f, 0.0f).GetSafeNormal(); // Diagonal direction in X and Y
+        FVector InitialImpulse = InitialDirection * InitialSpeed;
 
-    // Scale the direction by the initial speed
-    FVector InitialImpulse = RandomDirection * InitialSpeed;
+        // Log the initial impulse to verify it's correct
+        UE_LOG(LogTemp, Warning, TEXT("Initial Impulse: X=%f Y=%f Z=%f"), InitialImpulse.X, InitialImpulse.Y, InitialImpulse.Z);
 
-    // Apply the impulse to the sphere component
-    Sphere->AddImpulse(InitialImpulse, NAME_None, true);
+        // Apply the impulse to the sphere component
+        Sphere->AddImpulse(InitialImpulse, NAME_None, true);
+    }, 3.0f, false); // 1.0f is the delay in seconds
 }
 
 // Called every frame
@@ -64,22 +76,30 @@ void APongBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
         // Get the current velocity of the ball
         FVector CurrentVelocity = Sphere->GetComponentVelocity();
         UE_LOG(LogTemp, Warning, TEXT("Ball velocity before hit: X=%f Y=%f Z=%f"), CurrentVelocity.X, CurrentVelocity.Y, CurrentVelocity.Z);
-        
+
         // Only proceed if the ball has some velocity
         if (!CurrentVelocity.IsZero())
         {
-            // Reflect the velocity based on the hit normal
-            FVector HitNormal = Hit.Normal; // Normal of the wall
+            // Calculate the reflection based on the hit normal
+            FVector HitNormal = Hit.Normal;
+
+            // Calculate the reflected velocity
             FVector ReflectedVelocity = CurrentVelocity - 2 * FVector::DotProduct(CurrentVelocity, HitNormal) * HitNormal;
-            
+
             // Clamp Z component to prevent upward movement
-            ReflectedVelocity.Z = 0.0f; 
+            ReflectedVelocity.Z = 0.0f;
+
+            // Maintain the speed of the ball and increase it by 10 units
+            ReflectedVelocity = ReflectedVelocity.GetSafeNormal() * (InitialSpeed + 10.0f); // Increment speed by 10 units
 
             // Log the reflected velocity
             UE_LOG(LogTemp, Warning, TEXT("Ball reflected velocity: X=%f Y=%f Z=%f"), ReflectedVelocity.X, ReflectedVelocity.Y, ReflectedVelocity.Z);
-            
+
             // Set the new velocity to the reflected velocity
             Sphere->SetPhysicsLinearVelocity(ReflectedVelocity);
+
+            // Update InitialSpeed for the next bounce
+            InitialSpeed += 10.0f; // Increase initial speed by 10 for future bounces
         }
     }
 }

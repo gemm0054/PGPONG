@@ -33,7 +33,7 @@ public:
 
 	// Initial speed of the ball
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-	float InitialSpeed = 1000.0f;
+	float InitialSpeed = 750.0f;
 	
 
 	// Ball bounce function
