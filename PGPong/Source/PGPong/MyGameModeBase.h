@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -10,9 +9,9 @@ class PGPONG_API ACustomGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
-public:
+protected:
 	virtual void BeginPlay() override;
 
-protected:
+private:
 	void SetFixedCameraView();
 };
