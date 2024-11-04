@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "PGPong",
+			"Path": "..\\Source\\PGPong.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "PGPongEditor",
+			"Path": "..\\Source\\PGPongEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}

@@ -20,7 +20,7 @@ public:
 	void SetScore(int32 Player1Score, int32 Player2Score);
 
 	// Add score function
-	void AddScore(int PlayerIndex, int Points);
+	void AddScore(int PlayerIndex);
 
 	// Get score function
 	int32 GetScore(int32 PlayerIndex) const;

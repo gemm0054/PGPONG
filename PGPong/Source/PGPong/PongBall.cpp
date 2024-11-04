@@ -1,12 +1,9 @@
-// PongBall.cpp
-
 #include "PongBall.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "PongGoal.h"
-#include "PongGameState.h"
-#include "Paddle.h" // Import your paddle class
+#include "Paddle.h"
 #include "PongWalls.h"
 #include "TimerManager.h"
 
@@ -21,24 +18,37 @@ APongBall::APongBall()
     Sphere->SetCollisionProfileName(TEXT("PhysicsActor"));
     Sphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     Sphere->SetCollisionResponseToAllChannels(ECR_Block);
+    Sphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+    Sphere->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
     Sphere->SetNotifyRigidBodyCollision(true);
-    Sphere->SetSimulatePhysics(true);
+    Sphere->SetEnableGravity(false);
 
     // Create and attach the static mesh
     StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
     StaticMesh->SetupAttachment(Sphere);
-
-    // Optionally set a default static mesh (replace with your own mesh asset)
-    static ConstructorHelpers::FObjectFinder<UStaticMesh> BallMeshAsset(TEXT("StaticMesh'/Game/Path/To/Your/BallMesh.BallMesh'")); // Adjust path as needed
+    
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> BallMeshAsset(TEXT("StaticMesh'/Game/Path/To/Your/BallMesh.BallMesh'"));
     if (BallMeshAsset.Succeeded())
     {
-        StaticMesh->SetStaticMesh(BallMeshAsset.Object); // Set the mesh if found
+        StaticMesh->SetStaticMesh(BallMeshAsset.Object);
     }
 
-    // Set the initial direction and constant speed
-    ForwardDirection = FVector(1.0f, 1.0f, 0.0f).GetSafeNormal(); // Initial forward direction
-    ConstantForwardSpeed = 1000.0f; // Adjust this value as needed
-    MinimumSpeed = 300.0f; // Set a minimum speed
+    // Set up the projectile movement component
+    ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
+    ProjectileMovement->SetUpdatedComponent(Sphere);
+    ProjectileMovement->InitialSpeed = ConstantForwardSpeed;
+    ProjectileMovement->MaxSpeed = 1000.0f;
+    ProjectileMovement->bShouldBounce = true;
+    ProjectileMovement->Bounciness = 0.8f;
+    ProjectileMovement->Friction = 0.0f;
+    ProjectileMovement->ProjectileGravityScale = 0.0f;
+
+    // Set the initial forward direction
+    ForwardDirection = FVector(1.0f, 1.0f, 0.0f).GetSafeNormal();
+
+    // Initialize flags
+    bHasScored = false;
+    bIsColliding = false;
 }
 
 // Called when the game starts or when spawned
@@ -46,15 +56,13 @@ void APongBall::BeginPlay()
 {
     Super::BeginPlay();
 
-    // Start the ball movement after a 3-second delay
-    GetWorld()->GetTimerManager().SetTimer(StartMovementHandle, this, &APongBall::StartMovement, 3.0f, false);
-}
+    Tags.Add(FName("Ball"));
 
-// Function to start the ball movement
-void APongBall::StartMovement()
-{
-    // Enable movement by setting an initial velocity
-    Sphere->SetPhysicsLinearVelocity(ForwardDirection * ConstantForwardSpeed);
+    // Set the initial velocity to zero
+    ProjectileMovement->Velocity = FVector::ZeroVector;  // Ensure the ball starts stationary
+
+    // Set a timer to start movement after 3 seconds
+    GetWorld()->GetTimerManager().SetTimer(CollisionCooldownHandle, this, &APongBall::StartMovement, 3.0f, false);
 }
 
 // Called every frame
@@ -62,107 +70,81 @@ void APongBall::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
     
-    // Maintain constant forward velocity
-    // Only update the velocity if the ball has started moving
-    if (Sphere->GetComponentVelocity().Size() > 0)
+    // Maintain constant forward velocity only if movement has started
+    if (ProjectileMovement->Velocity.Size() > 0)
     {
         Sphere->SetPhysicsLinearVelocity(ForwardDirection * ConstantForwardSpeed);
     }
 }
 
-// Function to handle collisions
-void APongBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
-                      UPrimitiveComponent* OtherComp, FVector NormalImpulse,
-                      const FHitResult& Hit)
+// Function to start the ball movement
+void APongBall::StartMovement()
 {
-    if (!bCanCollide)
-    {
+    // Set the initial velocity for the ball to start moving
+    ProjectileMovement->Velocity = ForwardDirection * ProjectileMovement->InitialSpeed;
+    UE_LOG(LogTemp, Warning, TEXT("Ball movement started after delay."));
+}
+
+// Function to handle collisions
+void APongBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+    if (bIsColliding)
         return;
-    }
-
-    // Temporarily disable collisions
-    bCanCollide = false;
-    GetWorld()->GetTimerManager().SetTimer(CollisionCooldownHandle, this, &APongBall::ResetCollision, 0.1f, false);
-
-    // Log the current velocity before changing direction
-    FVector CurrentVelocity = Sphere->GetComponentVelocity();
 
     if (OtherActor && OtherActor->IsA(APaddle::StaticClass()))
     {
         FVector PaddleForwardDirection = OtherActor->GetActorForwardVector();
-        
-        // Calculate the dot product to check direction
         float DirectionCheck = FVector::DotProduct(ForwardDirection, PaddleForwardDirection);
 
-        if (DirectionCheck < 0) // The paddle is moving in the opposite direction
+        if (DirectionCheck < 0)
         {
             UE_LOG(LogTemp, Warning, TEXT("Ball hit the paddle in the opposite direction!"));
+        
+            // Reverse direction
+            ForwardDirection.X *= -1;
 
-            // Reverse only the horizontal direction (X)
-            ForwardDirection.X *= -1; // Reverse the X component of the direction
+            // Increase speed by a fixed amount
+            ProjectileMovement->InitialSpeed += 50.0f;
+            ProjectileMovement->MaxSpeed = ProjectileMovement->InitialSpeed; // Ensure max speed is updated
+            ProjectileMovement->Velocity = ForwardDirection * ProjectileMovement->InitialSpeed;
+
+            bIsColliding = true;
+            GetWorld()->GetTimerManager().SetTimer(CollisionCooldownHandle, this, &APongBall::ResetCollisionFlag, 0.1f, false);
         }
     }
     else if (OtherActor && OtherActor->IsA(APongWalls::StaticClass()))
     {
         UE_LOG(LogTemp, Warning, TEXT("Ball hit a wall!"));
-        // Reverse direction on wall hit (for vertical walls)
-        ForwardDirection.Y *= -1; // Reverse direction on wall hit
+        bIsColliding = true;
+        GetWorld()->GetTimerManager().SetTimer(CollisionCooldownHandle, this, &APongBall::ResetCollisionFlag, 0.1f, false);
     }
     else if (OtherActor && OtherActor->IsA(APongGoal::StaticClass()))
     {
-        UE_LOG(LogTemp, Warning, TEXT("Ball hit a goal!"));
-
-        // Handle scoring logic here
-        APongGoal* Goal = Cast<APongGoal>(OtherActor);
-        if (Goal)
+        if (!bHasScored) 
         {
-            // Assuming the goal's position determines the scoring player
-            APongGameState* GameState = Cast<APongGameState>(GetWorld()->GetGameState());
-            if (GameState)
-            {
-                // Update score based on which goal was hit
-                if (Goal->GetActorLocation().X < 0) // Left goal
-                {
-                    GameState->AddScore(1, 1); // Player 2 scores
-                    UE_LOG(LogTemp, Warning, TEXT("Player 2 scored! Current Score: %d"), GameState->GetScore(1));
-                }
-                else // Right goal
-                {
-                    GameState->AddScore(0, 1); // Player 1 scores
-                    UE_LOG(LogTemp, Warning, TEXT("Player 1 scored! Current Score: %d"), GameState->GetScore(0));
-                }
-            }
-
-            // Reset the ball after a goal
+            bHasScored = true; // Prevent multiple scoring
+            UE_LOG(LogTemp, Warning, TEXT("Ball hit a goal!"));
             ResetBall();
         }
     }
-
-    // Maintain constant speed
-    Sphere->SetPhysicsLinearVelocity(ForwardDirection * ConstantForwardSpeed);
-
-    // Log the new velocity to verify
-    UE_LOG(LogTemp, Warning, TEXT("New velocity after hit: X=%f Y=%f Z=%f"), Sphere->GetComponentVelocity().X, Sphere->GetComponentVelocity().Y, Sphere->GetComponentVelocity().Z);
 }
 
 // Function to reset the ball's position and velocity
 void APongBall::ResetBall()
 {
-    // Reset position to the center of the play area (adjust as necessary)
+    UE_LOG(LogTemp, Warning, TEXT("Resetting ball position and direction."));
     SetActorLocation(FVector(0.0f, 0.0f, 0.0f));
-    
-    // Reset the forward direction to the initial direction
-    ForwardDirection = FVector(1.0f, 1.0f, 0.0f).GetSafeNormal(); // Reset to initial forward direction
-    
-    // Set the initial velocity
-    Sphere->SetPhysicsLinearVelocity(ForwardDirection * ConstantForwardSpeed);
-    
-    // Optionally, you can add a small delay before starting the movement again
-    GetWorld()->GetTimerManager().SetTimer(StartMovementHandle, this, &APongBall::StartMovement, 1.0f, false); // Start movement after a 1-second delay
+    ForwardDirection = (FMath::RandBool() ? FVector(1.0f, 1.0f, 0.0f) : FVector(-1.0f, 1.0f, 0.0f)).GetSafeNormal();
+    ProjectileMovement->InitialSpeed = ConstantForwardSpeed;
+    ProjectileMovement->MaxSpeed = ConstantForwardSpeed;
+    ProjectileMovement->Velocity = ForwardDirection * ProjectileMovement->InitialSpeed;
+
+    bHasScored = false;
+    GetWorld()->GetTimerManager().SetTimer(CollisionCooldownHandle, this, &APongBall::StartMovement, 1.0f, false);
 }
 
-// Resets the collision flag after a short cooldown
-void APongBall::ResetCollision()
+// Function to reset the collision flag after a brief cooldown
+void APongBall::ResetCollisionFlag()
 {
-    bCanCollide = true;
+    bIsColliding = false;
 }

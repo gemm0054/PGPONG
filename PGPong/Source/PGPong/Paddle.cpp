@@ -1,6 +1,6 @@
 #include "Paddle.h"
 #include "GameFramework/PlayerController.h"
-#include "Components/InputComponent.h" // For input handling
+#include "Components/InputComponent.h"
 
 // Sets default values
 APaddle::APaddle()
@@ -21,14 +21,17 @@ void APaddle::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Bind input for paddle movement
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	if (PlayerController)
+	// Set up input only if this paddle is player-controlled
+	if (!bIsAIControlled)
 	{
-		InputComponent = NewObject<UInputComponent>(this);
-		InputComponent->RegisterComponent();
-		InputComponent->BindAxis("MovePaddle", this, &APaddle::MovePaddle);
-		PlayerController->PushInputComponent(InputComponent);
+		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+		if (PlayerController)
+		{
+			InputComponent = NewObject<UInputComponent>(this);
+			InputComponent->RegisterComponent();
+			InputComponent->BindAxis("MovePaddle", this, &APaddle::MovePaddle);
+			PlayerController->PushInputComponent(InputComponent);
+		}
 	}
 }
 
@@ -36,17 +39,22 @@ void APaddle::BeginPlay()
 void APaddle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// If AI-controlled, movement logic would be handled in the derived AI paddle class
 }
 
 // Move paddle function
 void APaddle::MovePaddle(float Value)
 {
-	// Calculate the movement based on input value, speed, and DeltaTime
-	FVector NewLocation = GetActorLocation();
-	NewLocation.Y += Value * MovementSpeed * GetWorld()->GetDeltaSeconds();
+	// Only move if controlled by player input
+	if (!bIsAIControlled)
+	{
+		FVector NewLocation = GetActorLocation();
+		NewLocation.Y += Value * MovementSpeed * GetWorld()->GetDeltaSeconds();
 
-	// Clamp the paddle's Y location to stay within bounds
-	NewLocation.Y = FMath::Clamp(NewLocation.Y, -500.0f, 500.0f); // Adjust bounds as needed
+		// Clamp the paddle's Y location to stay within bounds
+		NewLocation.Y = FMath::Clamp(NewLocation.Y, -500.0f, 500.0f); // Adjust bounds as needed
 
-	SetActorLocation(NewLocation);
+		SetActorLocation(NewLocation);
+	}
 }

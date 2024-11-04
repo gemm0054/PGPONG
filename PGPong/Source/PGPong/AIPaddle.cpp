@@ -1,30 +1,14 @@
 #include "AIPaddle.h"
-#include "PongBall.h" // Include your ball class
-#include "Kismet/GameplayStatics.h"
-#include "Engine/World.h" // Include this for GetWorld()
+
+#include "EngineUtils.h"
+#include "GameFramework/Actor.h"  // For actor properties
+#include "Engine/World.h"
 
 // Sets default values
 AAIPaddle::AAIPaddle()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	FollowSpeed = 500.0f; // Adjust the speed as necessary
-}
-
-// Called when the game starts or when spawned
-void AAIPaddle::BeginPlay()
-{
-	Super::BeginPlay();
-
-	// Find the ball in the world
-	Ball = UGameplayStatics::GetActorOfClass(GetWorld(), APongBall::StaticClass());
-	if (Ball)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("AI Paddle found the ball at location: %s"), *Ball->GetActorLocation().ToString());
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("AI Paddle could not find the ball!"));
-	}
+	bIsAIControlled = true;  // This paddle is AI-controlled, so no player input is needed
 }
 
 // Called every frame
@@ -32,19 +16,54 @@ void AAIPaddle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (Ball)
+	if (BallActor)
 	{
-		// Get the ball's position
-		FVector BallLocation = Ball->GetActorLocation();
-        
-		// Move towards the ball's vertical position
-		FVector NewLocation = GetActorLocation();
-		NewLocation.Z = FMath::FInterpTo(NewLocation.Z, BallLocation.Z, DeltaTime, FollowSpeed);
-        
-		// Set the new location for the paddle
-		SetActorLocation(NewLocation);
+		if (!BallActor)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("BallActor is not set!"));
+			return; // Early exit if no ball is found
+		}
 
-		// Debug log to see the paddle's movement
-		UE_LOG(LogTemp, Warning, TEXT("AI Paddle moving to Z: %f"), NewLocation.Z);
+		FVector CurrentLocation = GetActorLocation();
+		float BallY = BallActor->GetActorLocation().Y;
+		
+
+		float NewY = FMath::FInterpTo(CurrentLocation.Y, BallY, DeltaTime, AISpeedMultiplier);
+		CurrentLocation.Y = FMath::Clamp(NewY, -500.0f, 500.0f); // Adjust bounds as necessary
+		SetActorLocation(CurrentLocation);
+	}
+	else
+	{
+		for (TActorIterator<AActor> It(GetWorld()); It; ++It)
+		{
+			if (It->ActorHasTag("Ball")) 
+			{
+				BallActor = *It;
+				UE_LOG(LogTemp, Warning, TEXT("Ball found!"));
+				break;
+			}
+		}
 	}
 }
+
+
+// Function to move the AI paddle towards the ball’s Y position
+void AAIPaddle::MoveTowardsBall(float DeltaTime)
+{
+	if (!BallActor)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("BallActor is not set!"));
+		return; // Early exit if no ball is found
+	}
+
+	FVector CurrentLocation = GetActorLocation();
+	float BallY = BallActor->GetActorLocation().Y;
+
+	// Log the positions for debugging
+	UE_LOG(LogTemp, Warning, TEXT("Current Paddle Y: %f, Ball Y: %f"), CurrentLocation.Y, BallY);
+
+	float NewY = FMath::FInterpTo(CurrentLocation.Y, BallY, DeltaTime, AISpeedMultiplier);
+	CurrentLocation.Y = FMath::Clamp(NewY, -500.0f, 500.0f); // Adjust bounds as necessary
+	SetActorLocation(CurrentLocation);
+}
+

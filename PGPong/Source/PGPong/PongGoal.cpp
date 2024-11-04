@@ -24,10 +24,12 @@ void APongGoal::BeginPlay()
 }
 
 // Function to handle the ball's collision
+
 void APongGoal::OnBallHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 						  UPrimitiveComponent* OtherComp, FVector NormalImpulse,
 						  const FHitResult& Hit)
 {
+	
 	// Check if the OtherActor is valid and is of type APongBall
 	if (OtherActor && OtherActor->IsA(APongBall::StaticClass()))
 	{
@@ -38,16 +40,16 @@ void APongGoal::OnBallHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 			// Assuming you have separate goals for each player
 			if (GetActorLocation().X < 0) // Left goal
 			{
-				GameState->AddScore(1, 1); // Add a point to player 2's score
+				GameState->AddScore(0); // Add a point to player 2's score
 				UE_LOG(LogTemp, Warning, TEXT("Player 2 scored! Current Score: %d"), GameState->GetScore(1));
 			}
 			else // Right goal
 			{
-				GameState->AddScore(0, 1); // Add a point to player 1's score
+				GameState->AddScore(1); // Add a point to player 1's score
 				UE_LOG(LogTemp, Warning, TEXT("Player 1 scored! Current Score: %d"), GameState->GetScore(0));
 			}
 
 			// Optionally, reset the ball position or any other logic here
 		}
-	}
+	} 
 }

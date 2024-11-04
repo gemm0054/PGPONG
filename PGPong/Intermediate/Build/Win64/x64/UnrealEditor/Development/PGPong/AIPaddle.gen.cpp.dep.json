@@ -1,0 +1,17 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "e:\\assignment1game\\pgpong\\pgpong\\pgpong\\intermediate\\build\\win64\\unrealeditor\\inc\\pgpong\\uht\\aipaddle.gen.cpp",
+        "ProvidedModule": "",
+        "PCH": "e:\\assignment1game\\pgpong\\pgpong\\pgpong\\intermediate\\build\\win64\\x64\\pgpongeditor\\development\\engine\\sharedpch.engine.cpp20.h.pch",
+        "Includes": [
+            "e:\\assignment1game\\pgpong\\pgpong\\pgpong\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\pgpong\\definitions.pgpong.h",
+            "e:\\assignment1game\\pgpong\\pgpong\\pgpong\\source\\pgpong\\aipaddle.h",
+            "e:\\assignment1game\\pgpong\\pgpong\\pgpong\\source\\pgpong\\paddle.h",
+            "e:\\assignment1game\\pgpong\\pgpong\\pgpong\\intermediate\\build\\win64\\unrealeditor\\inc\\pgpong\\uht\\paddle.generated.h",
+            "e:\\assignment1game\\pgpong\\pgpong\\pgpong\\intermediate\\build\\win64\\unrealeditor\\inc\\pgpong\\uht\\aipaddle.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

@@ -1,0 +1,43 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "e:\\assignment1game\\pgpong\\pgpong\\pgpong\\source\\pgpong\\mygamemodebase.cpp",
+        "ProvidedModule": "",
+        "PCH": "e:\\assignment1game\\pgpong\\pgpong\\pgpong\\intermediate\\build\\win64\\x64\\pgpongeditor\\development\\engine\\sharedpch.engine.cpp20.h.pch",
+        "Includes": [
+            "e:\\assignment1game\\pgpong\\pgpong\\pgpong\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\pgpong\\definitions.pgpong.h",
+            "e:\\assignment1game\\pgpong\\pgpong\\pgpong\\source\\pgpong\\mygamemodebase.h",
+            "e:\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\gameframework\\gamemodebase.h",
+            "e:\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\engine\\serverstatreplicator.h",
+            "e:\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\serverstatreplicator.generated.h",
+            "e:\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\gamemodebase.generated.h",
+            "e:\\assignment1game\\pgpong\\pgpong\\pgpong\\intermediate\\build\\win64\\unrealeditor\\inc\\pgpong\\uht\\mygamemodebase.generated.h",
+            "e:\\assignment1game\\pgpong\\pgpong\\pgpong\\source\\pgpong\\ponggamestate.h",
+            "e:\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\gameframework\\gamestatebase.h",
+            "e:\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\gamestatebase.generated.h",
+            "e:\\assignment1game\\pgpong\\pgpong\\pgpong\\source\\pgpong\\myhud.h",
+            "e:\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\gameframework\\hud.h",
+            "e:\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\gameframework\\hudhitbox.h",
+            "e:\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\gameframework\\debugtextinfo.h",
+            "e:\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\debugtextinfo.generated.h",
+            "e:\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\hud.generated.h",
+            "e:\\assignment1game\\pgpong\\pgpong\\pgpong\\intermediate\\build\\win64\\unrealeditor\\inc\\pgpong\\uht\\myhud.generated.h",
+            "e:\\assignment1game\\pgpong\\pgpong\\pgpong\\intermediate\\build\\win64\\unrealeditor\\inc\\pgpong\\uht\\ponggamestate.generated.h",
+            "e:\\ue_5.3\\engine\\source\\runtime\\engine\\public\\engineutils.h",
+            "e:\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\kismet\\gameplaystatics.h",
+            "e:\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\kismet\\kismetsystemlibrary.h",
+            "e:\\ue_5.3\\engine\\source\\runtime\\coreuobject\\public\\uobject\\propertyaccessutil.h",
+            "e:\\ue_5.3\\engine\\source\\runtime\\coreuobject\\public\\assetregistry\\arfilter.h",
+            "e:\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\kismetsystemlibrary.generated.h",
+            "e:\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\sound\\dialoguetypes.h",
+            "e:\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\dialoguetypes.generated.h",
+            "e:\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\kismet\\gameplaystaticstypes.h",
+            "e:\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\gameplaystaticstypes.generated.h",
+            "e:\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\gameplaystatics.generated.h",
+            "e:\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\camera\\cameraactor.h",
+            "e:\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\cameraactor.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

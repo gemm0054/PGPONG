@@ -24,15 +24,15 @@ void APongGameState::SetScore(int32 NewPlayer1Score, int32 NewPlayer2Score)
 }
 
 // Add score function
-void APongGameState::AddScore(int PlayerIndex, int Points)
+void APongGameState::AddScore(int PlayerIndex)
 {
 	if (PlayerIndex == 0)
 	{
-		Player1Score += Points;
+		Player1Score += 1;
 	}
 	else if (PlayerIndex == 1)
 	{
-		Player2Score += Points;
+		Player2Score += 1;
 	}
 
 	// Update the HUD with the new scores

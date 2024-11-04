@@ -2,8 +2,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Components/SphereComponent.h"
 #include "PongBall.generated.h"
+
+class USphereComponent;
+class UStaticMeshComponent;
+class UProjectileMovementComponent;
+class APongGoal;
+class APongGameState;
 
 UCLASS()
 class PGPONG_API APongBall : public AActor
@@ -22,41 +27,48 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Function to start the ball movement
+	void StartMovement();
+
 	// Function to handle collisions
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 			   UPrimitiveComponent* OtherComp, FVector NormalImpulse,
 			   const FHitResult& Hit);
 
+	// Function to reset the ball's position and velocity
+	void ResetBall();
+
+	void ResetCollisionFlag();
+
 private:
 	// Sphere component for collision
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* Sphere;
-	
-	// Initial position of the ball
-	FVector InitialPosition;
 
-	// Static mesh component
+	// Static mesh component for the ball's visual representation
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* StaticMesh;
 
-	// Initial speed and direction
-	FVector ForwardDirection; // Stores the initial direction of the ball
-	float ConstantForwardSpeed; // The speed to maintain
-	float MinimumSpeed; // Minimum speed for the ball
+	// Projectile movement component for handling the ball's movement
+	UPROPERTY(VisibleAnywhere)
+	UProjectileMovementComponent* ProjectileMovement;
 
-	// Collision flag and timer handle
-	bool bCanCollide = true;
+	// The forward direction of the ball
+	FVector ForwardDirection;
+
+	// Speed constants
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	float ConstantForwardSpeed = 500.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	float SpeedIncreaseFactor = 1.2f;
+	
+
+	// Flags for collision and scoring
+	bool bHasScored;
+	bool bIsColliding;
+
+	// Timer handle for collision cooldown
 	FTimerHandle CollisionCooldownHandle;
-
-	// Timer handle for starting ball movement
-	FTimerHandle StartMovementHandle; // Handle for the timer to start movement
-
-	// Function to reset the collision flag
-	void ResetCollision();
-
-	void ResetBall();
-
-	// Function to start the ball movement
-	void StartMovement(); // Declaration of the function to start movement
 };

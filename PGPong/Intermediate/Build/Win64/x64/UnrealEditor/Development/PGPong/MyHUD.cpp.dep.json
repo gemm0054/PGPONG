@@ -1,0 +1,31 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "e:\\assignment1game\\pgpong\\pgpong\\pgpong\\source\\pgpong\\myhud.cpp",
+        "ProvidedModule": "",
+        "PCH": "e:\\assignment1game\\pgpong\\pgpong\\pgpong\\intermediate\\build\\win64\\x64\\pgpongeditor\\development\\engine\\sharedpch.engine.cpp20.h.pch",
+        "Includes": [
+            "e:\\assignment1game\\pgpong\\pgpong\\pgpong\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\pgpong\\definitions.pgpong.h",
+            "e:\\assignment1game\\pgpong\\pgpong\\pgpong\\source\\pgpong\\myhud.h",
+            "e:\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\gameframework\\hud.h",
+            "e:\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\gameframework\\hudhitbox.h",
+            "e:\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\gameframework\\debugtextinfo.h",
+            "e:\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\debugtextinfo.generated.h",
+            "e:\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\hud.generated.h",
+            "e:\\assignment1game\\pgpong\\pgpong\\pgpong\\intermediate\\build\\win64\\unrealeditor\\inc\\pgpong\\uht\\myhud.generated.h",
+            "e:\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\engine\\canvas.h",
+            "e:\\ue_5.3\\engine\\source\\runtime\\engine\\public\\canvasitem.h",
+            "e:\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\engine\\font.h",
+            "e:\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\engine\\fontimportoptions.h",
+            "e:\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\fontimportoptions.generated.h",
+            "e:\\ue_5.3\\engine\\source\\runtime\\slatecore\\public\\fonts\\fontproviderinterface.h",
+            "e:\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\slatecore\\uht\\fontproviderinterface.generated.h",
+            "e:\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\font.generated.h",
+            "e:\\ue_5.3\\engine\\source\\runtime\\engine\\public\\canvastypes.h",
+            "e:\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\canvastypes.generated.h",
+            "e:\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\canvas.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}
