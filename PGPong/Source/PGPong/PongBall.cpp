@@ -26,7 +26,8 @@ APongBall::APongBall()
     // Create and attach the static mesh
     StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
     StaticMesh->SetupAttachment(Sphere);
-    
+
+    // Check if the Mesh was correctly created and set
     static ConstructorHelpers::FObjectFinder<UStaticMesh> BallMeshAsset(TEXT("StaticMesh'/Game/Path/To/Your/BallMesh.BallMesh'"));
     if (BallMeshAsset.Succeeded())
     {
@@ -56,6 +57,7 @@ void APongBall::BeginPlay()
 {
     Super::BeginPlay();
 
+    // Add the tag name for the AI Paddle to keep track of object
     Tags.Add(FName("Ball"));
 
     // Set the initial velocity to zero
@@ -91,14 +93,15 @@ void APongBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPr
     if (bIsColliding)
         return;
 
+    // Check if we are OnHit with a paddle
     if (OtherActor && OtherActor->IsA(APaddle::StaticClass()))
     {
+        // Reflection Math
         FVector PaddleForwardDirection = OtherActor->GetActorForwardVector();
         float DirectionCheck = FVector::DotProduct(ForwardDirection, PaddleForwardDirection);
 
         if (DirectionCheck < 0)
         {
-            UE_LOG(LogTemp, Warning, TEXT("Ball hit the paddle in the opposite direction!"));
         
             // Reverse direction
             ForwardDirection.X *= -1;
@@ -107,19 +110,22 @@ void APongBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPr
             ProjectileMovement->InitialSpeed += 50.0f;
             ProjectileMovement->MaxSpeed = ProjectileMovement->InitialSpeed; // Ensure max speed is updated
             ProjectileMovement->Velocity = ForwardDirection * ProjectileMovement->InitialSpeed;
-
+            // Set colliding flag to true
             bIsColliding = true;
             GetWorld()->GetTimerManager().SetTimer(CollisionCooldownHandle, this, &APongBall::ResetCollisionFlag, 0.1f, false);
         }
     }
+    // Check if we are OnHit with a Wall
     else if (OtherActor && OtherActor->IsA(APongWalls::StaticClass()))
     {
-        UE_LOG(LogTemp, Warning, TEXT("Ball hit a wall!"));
+        // Set Colliding flag to true
         bIsColliding = true;
         GetWorld()->GetTimerManager().SetTimer(CollisionCooldownHandle, this, &APongBall::ResetCollisionFlag, 0.1f, false);
     }
+    // Check if we are OnHit with a Goal
     else if (OtherActor && OtherActor->IsA(APongGoal::StaticClass()))
     {
+        // set flag to check if not scored to keep it from double scoring
         if (!bHasScored) 
         {
             bHasScored = true; // Prevent multiple scoring
@@ -132,7 +138,7 @@ void APongBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPr
 // Function to reset the ball's position and velocity
 void APongBall::ResetBall()
 {
-    UE_LOG(LogTemp, Warning, TEXT("Resetting ball position and direction."));
+    // Resetting all aspects of the ball, location, speed, etc.
     SetActorLocation(FVector(0.0f, 0.0f, 0.0f));
     ForwardDirection = (FMath::RandBool() ? FVector(1.0f, 1.0f, 0.0f) : FVector(-1.0f, 1.0f, 0.0f)).GetSafeNormal();
     ProjectileMovement->InitialSpeed = ConstantForwardSpeed;
@@ -146,5 +152,6 @@ void APongBall::ResetBall()
 // Function to reset the collision flag after a brief cooldown
 void APongBall::ResetCollisionFlag()
 {
+    //reset the flag
     bIsColliding = false;
 }

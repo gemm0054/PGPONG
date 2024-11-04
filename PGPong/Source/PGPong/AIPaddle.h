@@ -25,7 +25,5 @@ private:
 	// Speed multiplier for AI paddle movement
 	UPROPERTY(EditAnywhere, Category="AI")
 	float AISpeedMultiplier = 3.0f;
-
-	// Function to update the paddle's position based on the ball's position
-	void MoveTowardsBall(float DeltaTime);
+	
 };

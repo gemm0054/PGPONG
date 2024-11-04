@@ -24,7 +24,6 @@ void APongGoal::BeginPlay()
 }
 
 // Function to handle the ball's collision
-
 void APongGoal::OnBallHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 						  UPrimitiveComponent* OtherComp, FVector NormalImpulse,
 						  const FHitResult& Hit)
@@ -48,8 +47,6 @@ void APongGoal::OnBallHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 				GameState->AddScore(1); // Add a point to player 1's score
 				UE_LOG(LogTemp, Warning, TEXT("Player 1 scored! Current Score: %d"), GameState->GetScore(0));
 			}
-
-			// Optionally, reset the ball position or any other logic here
 		}
 	} 
 }

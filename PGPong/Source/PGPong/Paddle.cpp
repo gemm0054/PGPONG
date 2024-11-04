@@ -24,9 +24,11 @@ void APaddle::BeginPlay()
 	// Set up input only if this paddle is player-controlled
 	if (!bIsAIControlled)
 	{
+		// Get the player controller
 		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 		if (PlayerController)
 		{
+			// Setup the input component for player use
 			InputComponent = NewObject<UInputComponent>(this);
 			InputComponent->RegisterComponent();
 			InputComponent->BindAxis("MovePaddle", this, &APaddle::MovePaddle);
@@ -39,14 +41,12 @@ void APaddle::BeginPlay()
 void APaddle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	// If AI-controlled, movement logic would be handled in the derived AI paddle class
 }
 
 // Move paddle function
 void APaddle::MovePaddle(float Value)
 {
-	// Only move if controlled by player input
+	// Only move if controlled by player input and not AI movement
 	if (!bIsAIControlled)
 	{
 		FVector NewLocation = GetActorLocation();

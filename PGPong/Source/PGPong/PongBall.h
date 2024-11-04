@@ -39,6 +39,7 @@ public:
 	// Function to reset the ball's position and velocity
 	void ResetBall();
 
+	// Function to handle the reset flag
 	void ResetCollisionFlag();
 
 private:

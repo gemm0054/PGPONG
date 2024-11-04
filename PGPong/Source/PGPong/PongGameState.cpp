@@ -26,10 +26,12 @@ void APongGameState::SetScore(int32 NewPlayer1Score, int32 NewPlayer2Score)
 // Add score function
 void APongGameState::AddScore(int PlayerIndex)
 {
+	// Add score to player 1
 	if (PlayerIndex == 0)
 	{
 		Player1Score += 1;
 	}
+	// Add score to player 2
 	else if (PlayerIndex == 1)
 	{
 		Player2Score += 1;

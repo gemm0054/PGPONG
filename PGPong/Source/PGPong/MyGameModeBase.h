@@ -13,5 +13,6 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	//function to set the camera
 	void SetFixedCameraView();
 };

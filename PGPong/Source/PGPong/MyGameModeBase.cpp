@@ -1,6 +1,6 @@
 #include "MyGameModeBase.h"
-#include "PongGameState.h" // Include the GameState header
-#include "MyHUD.h"      // Include the HUD header
+#include "PongGameState.h"
+#include "MyHUD.h"
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerController.h"
@@ -21,6 +21,7 @@ void ACustomGameMode::BeginPlay()
 	}
 }
 
+//Function to set the starting Camera
 void ACustomGameMode::SetFixedCameraView()
 {
 	// Get the player controller
@@ -30,8 +31,9 @@ void ACustomGameMode::SetFixedCameraView()
 		// Look for a CameraActor in the level to set as the fixed camera view
 		for (TActorIterator<ACameraActor> CameraItr(GetWorld()); CameraItr; ++CameraItr)
 		{
+			// Use the first CameraActor found in the level
 			PC->SetViewTargetWithBlend(*CameraItr, 3.f, EViewTargetBlendFunction::VTBlend_Cubic);
-			break; // Use the first CameraActor found in the level
+			break; 
 		}
 	}
 }
