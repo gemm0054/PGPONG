@@ -1,0 +1,640 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="15.1">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1720</x>
+      <y>790</y>
+      <w>210</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;APaddle&gt;&gt;
+AIPaddle
+--
+- BallActor: AActor*
+- AISpeedMultiplier: float
+--
++ AAIPaddle()
+# Tick(DeltaTime: float) : void
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>310</x>
+      <y>70</y>
+      <w>200</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;AGameModeBase&gt;&gt;
+MyGameModeBase
+-
+# BeginPlay(): void
+- SetFixedCameraView(): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>50</x>
+      <y>60</y>
+      <w>210</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;AHUD&gt;&gt;
+MyHUD
+-
+- Player1Score: int
+- Player2Score: int
+-
++ DrawHUD(): void
++ SetScore(): void
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1200</x>
+      <y>710</y>
+      <w>470</w>
+      <h>230</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;AActor&gt;&gt;
+Paddle
+-
+UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Paddle")
++ MovementSpeed: float
+
+UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Paddle")
++ bIsAIControlled: bool
+
+UPROPERTY(VisibleAnywhere)
+- PaddleMesh: UStaticMeshComponent
+-
++ APaddle()
+# BeginPlay(): void
++ Tick(DeltaTime: float): void
++ MovePaddle(Value: float): void
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>610</x>
+      <y>300</y>
+      <w>490</w>
+      <h>620</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;AActor&gt;&gt;
+PongBall
+-
+UPROPERTY(VisibleAnywhere)
+- Sphere: USphereComponent
+
+UPROPERTY(VisibleAnywhere)
+- StaticMesh: UStaticMeshComponent
+
+UPROPERTY(VisibleAnywhere)
+- ProjectileMovement: UProjectileMovementComponent*
+
+- ForwardDirection: FVector
+
+UPROPERTY(EditDefaultsOnly, Category = "Movement")
+- ConstantForwardSpeed: float
+
+UPROPERTY(EditDefaultsOnly, Category = "Movement")
+- SpeedIncreaseFactor: float
+
+- bHasScored: bool
+
+- bIsColliding: bool
+
+- CollisionCooldownHandle: FTimerHandle
+-
+# BeginPlay(): void
+
++ Tick(DeltaTime: float): void
+
++ StartMovement(): void
+
+UFUNCTION()
++ OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+			   UPrimitiveComponent* OtherComp, FVector NormalImpulse,
+			   const FHitResult&amp; Hit): void
+
++ ResetBall(): void
+
++ ResetCollisionFlag(): void
+
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>670</x>
+      <y>20</y>
+      <w>410</w>
+      <h>230</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;AGameStateBase&gt;&gt;
+PongGameState
+-
+- Player1Score: int32
+
+- Player2Score: int32
+-
++ APongGameState()
+
++ SetScore(Player1Score: int32, Player2Score: int32): void
+
++ AddScore(PlayerIndex: int): void
+
++ GetScore(PlayerIndex: int32): int32</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1220</x>
+      <y>20</y>
+      <w>440</w>
+      <h>230</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;AActor&gt;&gt;
+PongGoal
+-
+UPROPERTY(VisibleAnywhere)
+- GoalBox: UBoxComponent
+-
++ APongGoal()
+
+# BeginPlay(): void
+
+UFUNCTION()
+OnBallHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+				   UPrimitiveComponent* OtherComp, FVector NormalImpulse,
+				   const FHitResult&amp; Hit): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1250</x>
+      <y>380</y>
+      <w>510</w>
+      <h>230</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;AActor&gt;&gt;
+PongWalls
+-
++ APongWalls
+
+UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
++ StaticMesh: UStaticMeshComponent
+
+UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
++ Box: UBoxComponent
+-
+# BeginPlay(): void
+
++ Tick(DeltaTime: float): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1660</x>
+      <y>840</y>
+      <w>80</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.
+</panel_attributes>
+    <additional_attributes>60.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1070</x>
+      <y>70</y>
+      <w>170</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+Has A pointer to 
+GameState</panel_attributes>
+    <additional_attributes>150.0;10.0;10.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1090</x>
+      <y>120</y>
+      <w>170</w>
+      <h>580</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-
+Collides with</panel_attributes>
+    <additional_attributes>130.0;10.0;10.0;560.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1090</x>
+      <y>530</y>
+      <w>180</w>
+      <h>170</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-
+Collides with</panel_attributes>
+    <additional_attributes>160.0;10.0;10.0;150.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1090</x>
+      <y>670</y>
+      <w>160</w>
+      <h>210</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-
+Collides with</panel_attributes>
+    <additional_attributes>110.0;190.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>10</x>
+      <y>380</y>
+      <w>100</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>PongBall
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>120</x>
+      <y>430</y>
+      <w>210</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>Sphere(USphereComponent)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>210</x>
+      <y>500</y>
+      <w>240</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>StaticMesh(UStaticMeshComponent)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>210</x>
+      <y>580</y>
+      <w>380</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>ProjectileMovement(UProjectileMovementComponent)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>40</x>
+      <y>400</y>
+      <w>30</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>40</x>
+      <y>430</y>
+      <w>100</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>80.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>150</x>
+      <y>450</y>
+      <w>80</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>10.0;10.0;10.0;70.0;60.0;70.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>150</x>
+      <y>510</y>
+      <w>30</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>10.0;10.0;10.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>150</x>
+      <y>570</y>
+      <w>80</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>10.0;20.0;60.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>500</x>
+      <y>90</y>
+      <w>190</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+Has A pointer to 
+GameState</panel_attributes>
+    <additional_attributes>10.0;20.0;170.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>0</x>
+      <y>660</y>
+      <w>100</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>PongGoal</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>120</x>
+      <y>720</y>
+      <w>190</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>GoalBox(UBoxComponent)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>30</x>
+      <y>680</y>
+      <w>30</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>30</x>
+      <y>710</y>
+      <w>110</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>90.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>10</x>
+      <y>790</y>
+      <w>100</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>PongWalls
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>130</x>
+      <y>850</y>
+      <w>250</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>StaticMesh(UStaticMeshComponent)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>360</x>
+      <y>360</y>
+      <w>180</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>The RootComponent</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>320</x>
+      <y>390</y>
+      <w>120</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;40.0;100.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>350</x>
+      <y>650</y>
+      <w>180</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>The RootComponent</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>300</x>
+      <y>680</y>
+      <w>120</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;40.0;100.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>380</x>
+      <y>780</y>
+      <w>180</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>The RootComponent</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>370</x>
+      <y>810</y>
+      <w>90</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;40.0;70.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>230</x>
+      <y>950</y>
+      <w>160</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>Box(UBoxComponent)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>40</x>
+      <y>810</y>
+      <w>30</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>40</x>
+      <y>840</y>
+      <w>110</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>90.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>160</x>
+      <y>870</y>
+      <w>30</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>10.0;10.0;10.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>160</x>
+      <y>940</y>
+      <w>90</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>70.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>10</x>
+      <y>1020</y>
+      <w>100</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>Paddle
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>130</x>
+      <y>1080</y>
+      <w>250</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>PaddleMesh(UStaticMeshComponent)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>50</x>
+      <y>1040</y>
+      <w>30</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>50</x>
+      <y>1080</y>
+      <w>100</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>80.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>390</x>
+      <y>1020</y>
+      <w>180</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>The RootComponent</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>370</x>
+      <y>1050</y>
+      <w>100</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;30.0;80.0;10.0</additional_attributes>
+  </element>
+</diagram>

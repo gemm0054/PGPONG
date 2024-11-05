@@ -24,6 +24,6 @@ private:
 
 	// Speed multiplier for AI paddle movement
 	UPROPERTY(EditAnywhere, Category="AI")
-	float AISpeedMultiplier = 3.0f;
+	float AISpeedMultiplier = 2.5f;
 	
 };

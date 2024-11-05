@@ -51,10 +51,8 @@ void APaddle::MovePaddle(float Value)
 	{
 		FVector NewLocation = GetActorLocation();
 		NewLocation.Y += Value * MovementSpeed * GetWorld()->GetDeltaSeconds();
-
-		// Clamp the paddle's Y location to stay within bounds
-		NewLocation.Y = FMath::Clamp(NewLocation.Y, -500.0f, 500.0f); // Adjust bounds as needed
-
-		SetActorLocation(NewLocation);
+        
+		// Move to new location, relying on collision with walls to restrict movement
+		SetActorLocation(NewLocation, true);  // 'true' enables sweep to stop at walls
 	}
 }
